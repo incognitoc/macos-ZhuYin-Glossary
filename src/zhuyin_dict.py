@@ -18,16 +18,15 @@ LOCAL_BACKUP = os.path.expanduser("~/Desktop/Zhuyin_Custom_Words.txt")
 SERVICE_WORKFLOW = os.path.expanduser("~/Library/Services/➕ 加入注音詞庫.workflow")
 
 def get_bopomofo_spaced(text):
-    swift_code = f'''
-    import Foundation
-    let text = "{text}"
-    let mutable = NSMutableString(string: text) as CFMutableString
-    CFStringTransform(mutable, nil, kCFStringTransformMandarinLatin, false)
-    CFStringTransform(mutable, nil, kCFStringTransformLatinBopomofo, false)
-    print(mutable)
-    '''
+    jxa_code = f"""
+    ObjC.import('Foundation');
+    var str = $.NSMutableString.stringWithString({repr(text)});
+    $.CFStringTransform(str, null, $.kCFStringTransformMandarinLatin, false);
+    $.CFStringTransform(str, null, $.kCFStringTransformLatinBopomofo, false);
+    str.js;
+    """
     try:
-        res = subprocess.run(["swift", "-e", swift_code], capture_output=True, text=True, timeout=5)
+        res = subprocess.run(["osascript", "-l", "JavaScript", "-e", jxa_code], capture_output=True, text=True, timeout=3)
         return " ".join(res.stdout.strip().split())
     except Exception:
         return ""
